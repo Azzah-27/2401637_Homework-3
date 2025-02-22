@@ -11,7 +11,18 @@ rhyming_data_2 <- rhyming_data %>%
 mutate (participant_number = row_number()) %>%
  select(stimulus, rt, correct, type, VerbalScored, high_low_verbal, participant_number)
 
-#plotting data 
-ggplot(rhyming_data_2) + 
-  geom_bar(aes(x = factor(type) , fill = as_factor(high_low_verbal) ,  position= "dodge"))
-  
+
+# Calculate the mean reaction time for each combination of `type` and `high_low_verbal`
+summary_data <- rhyming_data_2 %>%
+  group_by(type, high_low_verbal) %>%
+  summarise(mean_rt = mean(rt))
+
+# Plot the data using a bar graph
+ggplot(summary_data, aes(x = type, y = mean_rt, fill = high_low_verbal)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Reaction Times by Stimulus Type and Level of Inner Voice",
+       x = "Stimulus Type",
+       y = "Reaction Time (ms)") +
+  theme_minimal() 
+
+
