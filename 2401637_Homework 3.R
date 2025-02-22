@@ -30,5 +30,14 @@ ggplot(summary_data, aes(x = type, y = mean_rt, fill = high_low_verbal)) +
 rhyming_model <- lmer(data = rhyming_data_2, rt ~ type * high_low_verbal + (1|participant_number))
 summary(rhyming_model)
 
+#Chose a linear mixed-effects model (LMM) to analyze the data
+# Justification:
+#A mixed-effects model accounts for the variability within participants
+#The data has multiple trials per participant
+# A mixed-effects model can account for both fixed effects (stimulus type, level of inner voice) and random effects (participant variability)
 rhyming_model <- lmer(rt ~ type * high_low_verbal + (1 | worker_id), data = rhyming_data)
 summary(rhyming_model)
+
+# To check for significance of fixed effects
+anova(rhyming_model)
+
