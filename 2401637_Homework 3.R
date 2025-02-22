@@ -1,4 +1,5 @@
 library(tidyverse)
+library(lme4)
 
 #################### Question 1 ############################
 
