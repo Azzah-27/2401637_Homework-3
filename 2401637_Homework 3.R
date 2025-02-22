@@ -38,6 +38,30 @@ summary(rhyming_model)
 rhyming_model <- lmer(rt ~ type * high_low_verbal + (1 | worker_id), data = rhyming_data)
 summary(rhyming_model)
 
+# Justification:
+# - The model includes `type` and `high_low_verbal` as fixed effects, and their interaction.
+# - The random effect `(1 | worker_id)` accounts for variability between participants.
+# - This structure allows us to test whether the effect of stimulus type on reaction times depends on the level of inner speech.
+
+
 # To check for significance of fixed effects
 anova(rhyming_model)
+
+
+
+
+
+########################## QUESTION 2 ###############################
+
+
+#####3.1
+
+#beta distribution consists of 2 parameters: alpha and beta 
+#The beta distribution is a continuous probability distribution defined on the interval (0, 1)
+#To make our dependent variable fit within this interval
+#Our DV here is the percentages of marks. we need to convert these percentages to decimals to fit within this range
+#we divide the percentages by 100
+
+
+####
 
