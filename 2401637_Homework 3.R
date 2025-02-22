@@ -55,13 +55,17 @@ anova(rhyming_model)
 
 
 #####3.1
-
 #beta distribution consists of 2 parameters: alpha and beta 
 #The beta distribution is a continuous probability distribution defined on the interval (0, 1)
 #To make our dependent variable fit within this interval
 #Our DV here is the percentages of marks. we need to convert these percentages to decimals to fit within this range
 #we divide the percentages by 100
+   #For example: 
+     # - A mark of 67% would become 0.67
+     # - A mark of 85% would become 0.85
 
 
-####
+
+####3.2 
+
 
