@@ -26,4 +26,9 @@ ggplot(summary_data, aes(x = type, y = mean_rt, fill = high_low_verbal)) +
        y = "Reaction Time (ms)") +
   theme_minimal() 
 
+#fitting a model 
+rhyming_model <- lmer(data = rhyming_data_2, rt ~ type * high_low_verbal + (1|participant_number))
+summary(rhyming_model)
 
+rhyming_model <- lmer(rt ~ type * high_low_verbal + (1 | worker_id), data = rhyming_data)
+summary(rhyming_model)
