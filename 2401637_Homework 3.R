@@ -117,6 +117,39 @@ ggplot(prior_data, aes(x = x, y = y, color = Prior)) +
        y = "Density") +
   theme_minimal()
 
+
+#### 3.4 
+
+#using the code from the lecture 
+# μ ∼ N(67,5) σ ∼ Exp(0.5)
+mu <- rnorm(1, 67, 5)
+sigma <- rexp(1, 0.5)
+
+
+sim_students <- tibble(marks = rnorm(100, mu, sigma))
+
+#create table of mus and sigmas 
+priors <- tibble(n = 1:50) %>% group_by(n) %>% 
+  mutate(mu = rnorm(1, 67, 5), sigma = rexp(1, 0.5)) 
+
+# function that computes likelihood for a given mu and sigma] 
+gen_prior_pred <- function(n, mu, sigma) { 
+  
+  x <- seq(0, 100, 0.1) 
+  d <- tibble(n = n, mu = mu, sigma = sigma, 
+              x = x, 
+              y = dnorm(x, mu, sigma)) 
+  
+  return(d) 
+} 
+
+# apply function to each prior sample 
+prior_llh <- pmap_df(priors, gen_prior_pred)
+
+#plotting prior predictions 
+ggplot(prior_llh, aes(x, y, group = mu)) +  geom_path(alpha = 0.25)
+
+
  
 
 
