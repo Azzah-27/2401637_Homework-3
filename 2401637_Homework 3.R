@@ -68,26 +68,26 @@ anova(rhyming_model)
 
 
 ####3.2 
-set.seed(100)
 
-n <- 50
-
-# Define the range of x values (0 to 1)
-x <- seq(0, 1, by = 0.01)
+# Define the range of values for marks (0 to 1)
+marks <- seq(0, 1, by = 0.01)
 
 # Define parameters for the Beta distribution
 alpha <- as.numeric(13)  
 beta <- as.numeric(7)   
 
 # Calculate the probability density function (PDF) for the Beta distribution
-y <- dbeta(x, alpha, beta)
+y <- dbeta(marks, alpha, beta)
 
 # Create a data frame for plotting
-beta_data <- tibble(x = x, y = y)
+beta_data <- tibble(x = marks, y = y)
 
 # Plot the Beta distribution
-ggplot(beta_data, aes(x = x, y = y)) +
+ggplot(beta_data, aes(x = marks, y = y)) +
   geom_line(color = "red", linewidth = 1.5) 
+
+
+#####3.3
 
 
 
