@@ -89,15 +89,17 @@ ggplot(beta_data, aes(x = marks, y = y)) +
 
 #####3.3
 
+# Defining parameters for informative prior
 alpha_informative <- as.numeric(12)
 beta_informative <- as.numeric(7)  
 
-alpha_weakly <- as.numeric(9)  
-beta_weakly <- as.numeric(5)  
+# Defining parameters for weakly-informative prior
+alpha_weakly <- as.numeric(5)  
+beta_weakly <- as.numeric(3)  
 
-beta_data %>% 
-  mutate (informative = dnorm(marks, alpha_informative, beta_informative), 
-          weakly_informative = dnorm(marks, alpha_weakly, beta_weakly)) -> beta_data
+# Calculate densities for informative and weakly informative priors
+y_informative <- dbeta(marks, alpha_informative, beta_informative)
+y_weakly <- dbeta(marks, alpha_weakly, beta_weakly)
 
 
 
