@@ -102,6 +102,20 @@ y_informative <- dbeta(marks, alpha_informative, beta_informative)
 y_weakly <- dbeta(marks, alpha_weakly, beta_weakly)
 
 
+# Creating tables for plotting
+informative_data <- tibble(x = marks, y = y_informative, Prior = "Informative")
+weakly_data <- tibble(x = marks, y = y_weakly, Prior = "Weakly-Informative")
+
+# Combining data 
+prior_data <- rbind(informative_data, weakly_data)
+
+# Plotting informative and weakly informative priors 
+ggplot(prior_data, aes(x = x, y = y, color = Prior)) +
+  geom_line (size= 0.5) +
+  labs(title = "Informative vs. Weakly-Informative Priors",
+       x = "Proportion",
+       y = "Density") +
+  theme_minimal()
 
  
 
