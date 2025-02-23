@@ -87,7 +87,7 @@ beta_data <- tibble(x = x, y = y)
 
 # Plot the Beta distribution
 ggplot(beta_data, aes(x = x, y = y)) +
-  geom_line(color = "red", size = 1.5) 
+  geom_line(color = "red", linewidth = 1.5) 
 
 
 
