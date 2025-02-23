@@ -94,8 +94,8 @@ alpha_informative <- as.numeric(12)
 beta_informative <- as.numeric(7)  
 
 # Defining parameters for weakly-informative prior
-alpha_weakly <- as.numeric(5)  
-beta_weakly <- as.numeric(3)  
+alpha_weakly <- as.numeric(2)  
+beta_weakly <- as.numeric(1)  
 
 # Calculate densities for informative and weakly informative priors
 y_informative <- dbeta(marks, alpha_informative, beta_informative)
