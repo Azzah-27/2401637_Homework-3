@@ -76,8 +76,8 @@ n <- 50
 x <- seq(0, 1, by = 0.01)
 
 # Define parameters for the Beta distribution
-alpha <- as.numeric(17)  
-beta <- as.numeric(8)   
+alpha <- as.numeric(13)  
+beta <- as.numeric(7)   
 
 # Calculate the probability density function (PDF) for the Beta distribution
 y <- dbeta(x, alpha, beta)
