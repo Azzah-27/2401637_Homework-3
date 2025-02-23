@@ -60,7 +60,7 @@ anova(rhyming_model)
 #The beta distribution is a continuous probability distribution defined on the interval [0, 1]
 #To make our dependent variable fit within this interval
 #Our DV here is the percentages of marks. we need to convert these percentages to decimals to fit within this range
-#we divide the percentages by 100
+#we divide the percentages by 100 (considering marks are out of 100)
    #For example: 
      # - A mark of 67% would become 0.67
      # - A mark of 85% would become 0.85
@@ -89,11 +89,19 @@ ggplot(beta_data, aes(x = marks, y = y)) +
 
 #####3.3
 
+alpha_informative <- as.numeric(12)
+beta_informative <- as.numeric(7)  
+
+alpha_weakly <- as.numeric(9)  
+beta_weakly <- as.numeric(5)  
+
+beta_data %>% 
+  mutate (informative = dnorm(marks, alpha_informative, beta_informative), 
+          weakly_informative = dnorm(marks, alpha_weakly, beta_weakly)) -> beta_data
 
 
 
-
-
+ 
 
 
 
