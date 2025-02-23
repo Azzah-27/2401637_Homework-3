@@ -28,14 +28,14 @@ ggplot(summary_data, aes(x = type, y = mean_rt, fill = high_low_verbal)) +
 
 #fitting a model 
 rhyming_model <- lmer(data = rhyming_data_2, rt ~ type * high_low_verbal + (1|participant_number))
-summary(rhyming_model)
+summary(rhyming_model)   #doesnt work
+
 
 #Chose a linear mixed-effects model (LMM) to analyze the data
 # Justification:
-#A mixed-effects model accounts for the variability within participants
-#The data has multiple trials per participant
-# A mixed-effects model can account for both fixed effects (stimulus type, level of inner voice) and random effects (participant variability)
-rhyming_model <- lmer(rt ~ type * high_low_verbal + (1 | worker_id), data = rhyming_data)
+  #A mixed-effects model can account for both fixed effects (stimulus type, level of inner voice) and random effects (participant variability)
+  #The data has multiple trials per participant.
+rhyming_model <- lmer(data = rhyming_data, rt ~ type * high_low_verbal + (1 | worker_id))
 summary(rhyming_model)
 
 # Justification:
@@ -47,6 +47,7 @@ summary(rhyming_model)
 # To check for significance of fixed effects
 anova(rhyming_model)
 
+#Interpret the output
 
 
 
@@ -56,7 +57,7 @@ anova(rhyming_model)
 
 #####3.1
 #beta distribution consists of 2 parameters: alpha and beta 
-#The beta distribution is a continuous probability distribution defined on the interval (0, 1)
+#The beta distribution is a continuous probability distribution defined on the interval [0, 1]
 #To make our dependent variable fit within this interval
 #Our DV here is the percentages of marks. we need to convert these percentages to decimals to fit within this range
 #we divide the percentages by 100
