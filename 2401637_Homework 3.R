@@ -93,6 +93,8 @@ ggplot(beta_data, aes(x = marks, y = y)) +
 alpha_informative <- as.numeric(12)
 beta_informative <- as.numeric(7)  
 
+#create a rnorm for both 
+
 # Defining parameters for weakly-informative prior
 alpha_weakly <- as.numeric(1.50)  
 beta_weakly <- as.numeric(1.50)  
@@ -122,8 +124,8 @@ ggplot(prior_data, aes(x = x, y = y, color = Prior)) +
 
 #using the code from the lecture 
 # μ ∼ N(67,5) σ ∼ Exp(0.5)
-mu <- rnorm(1, 67, 5)
-sigma <- rexp(1, 0.5)
+mu <- rnorm(1, 67, 5)  #change to alpha
+sigma <- rexp(1, 0.5)  #change to beta rnorm
 
 
 sim_students <- tibble(marks = rnorm(100, mu, sigma))
@@ -147,10 +149,9 @@ gen_prior_pred <- function(n, mu, sigma) {
 prior_llh <- pmap_df(priors, gen_prior_pred)
 
 #plotting prior predictions 
-ggplot(prior_llh, aes(x, y, group = mu)) +  geom_path(alpha = 0.25)
+ggplot(prior_llh, aes(x, y, group = mu)) +  geom_path(alpha = 20)
 
 
- 
 
 
 
