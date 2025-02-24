@@ -60,6 +60,8 @@ anova(rhyming_model)
 #The beta distribution is a continuous probability distribution defined on the interval [0, 1]
 #To make our dependent variable fit within this interval
 #Our DV here is the percentages of marks. we need to convert these percentages to decimals to fit within this range
+#The Beta distribution takes two shape parameters: alpha (α) and beta (β).
+# Since the Beta distribution is defined on the interval [0, 1], we need to rescale the marks (0 to 100) to [0, 1].
 #we divide the percentages by 100 (considering marks are out of 100)
    #For example: 
      # - A mark of 67% would become 0.67
@@ -68,6 +70,11 @@ anova(rhyming_model)
 
 
 ####3.2 
+
+# Function to rescale marks to [0, 1]
+rescale_marks <- function(marks) {
+  marks / 100
+}
 
 # Define the range of values for marks (0 to 1)
 marks <- seq(0, 1, by = 0.01)
@@ -84,18 +91,19 @@ beta_data <- tibble(x = marks, y = y)
 
 # Plot the Beta distribution
 ggplot(beta_data, aes(x = marks, y = y)) +
-  geom_line(color = "red", linewidth = 1.5) 
+  geom_line(color = "red", linewidth = 1.5) +
+  labs(title = "Example Beta Distribution for Marks")
 
 
 #####3.3
 
-# Defining parameters for informative prior
+# Defining parameters for informative prior: based on prior knowledge
 alpha_informative <- as.numeric(12)
 beta_informative <- as.numeric(7)  
 
 #create a rnorm for both 
 
-# Defining parameters for weakly-informative prior
+# Defining parameters for weakly-informative prior: Broad and less specific
 alpha_weakly <- as.numeric(1.50)  
 beta_weakly <- as.numeric(1.50)  
 
@@ -124,15 +132,20 @@ ggplot(prior_data, aes(x = x, y = y, color = Prior)) +
 
 #using the code from the lecture 
 # μ ∼ N(67,5) σ ∼ Exp(0.5)
+set.seed(100)
+
 alpha_prior <- rnorm(1, 67, 5)  
-beta_prior <- rexp(1, 0.5)  
+beta_prior <- rnorm(1, 0.5)  
 
 # Simulate student marks from a Beta distribution
 sim_students <- tibble(marks = rbeta(100, alpha_prior, beta_prior))
 
 #create table of alpha and beta values for priors 
-priors <- tibble(n = 1:50) %>% group_by(n) %>% 
-  mutate(alpha_prior = runif(1, 1, 5), beta_prior = runif(1, 1, 5))
+priors <- tibble(n = 1:50) %>% 
+  group_by(n) %>% 
+  mutate(alpha_prior = rgamma(1, 1, 5), # Gamma ensures alpha > 0
+         beta_prior = rgamma(1, 1, 5) # Gamma ensures beta > 0
+         )
 
 # Function to compute the density for a given alpha and beta
 gen_prior_pred <- function(n, alpha_prior, beta_prior) { 
@@ -149,7 +162,7 @@ gen_prior_pred <- function(n, alpha_prior, beta_prior) {
 prior_llh <- pmap_df(priors, gen_prior_pred)
 
 #plotting prior predictions 
-ggplot(prior_llh, aes(x, y, group = alpha_prior)) +  
+ggplot(prior_llh, aes(x, y, group = interaction(alpha, beta))) +  
   geom_path(alpha = 0.50) +
  labs(title = "Beta Distribution for Priors",
        x = "Marks",
