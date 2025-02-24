@@ -124,23 +124,23 @@ ggplot(prior_data, aes(x = x, y = y, color = Prior)) +
 
 #using the code from the lecture 
 # μ ∼ N(67,5) σ ∼ Exp(0.5)
-mu <- rnorm(1, 67, 5)  #change to alpha
-sigma <- rexp(1, 0.5)  #change to beta rnorm
+alpha_prior <- rnorm(1, 67, 5)  
+beta_prior <- rexp(1, 0.5)  
 
+# Simulate student marks from a Beta distribution
+sim_students <- tibble(marks = rbeta(100, alpha_prior, beta_prior))
 
-sim_students <- tibble(marks = rnorm(100, mu, sigma))
-
-#create table of mus and sigmas 
+#create table of alpha and beta values for priors 
 priors <- tibble(n = 1:50) %>% group_by(n) %>% 
-  mutate(mu = rnorm(1, 67, 5), sigma = rexp(1, 0.5)) 
+  mutate(alpha_prior = runif(1, 1, 5), beta_prior = runif(1, 1, 5))
 
-# function that computes likelihood for a given mu and sigma] 
-gen_prior_pred <- function(n, mu, sigma) { 
+# Function to compute the density for a given alpha and beta
+gen_prior_pred <- function(n, alpha_prior, beta_prior) { 
   
   x <- seq(0, 100, 0.1) 
-  d <- tibble(n = n, mu = mu, sigma = sigma, 
+  d <- tibble(n = n, alpha = alpha_prior, beta = beta_prior, 
               x = x, 
-              y = dnorm(x, mu, sigma)) 
+              y = dbeta(x, alpha_prior, beta_prior)) 
   
   return(d) 
 } 
@@ -149,9 +149,12 @@ gen_prior_pred <- function(n, mu, sigma) {
 prior_llh <- pmap_df(priors, gen_prior_pred)
 
 #plotting prior predictions 
-ggplot(prior_llh, aes(x, y, group = mu)) +  geom_path(alpha = 20)
-
-
+ggplot(prior_llh, aes(x, y, group = alpha_prior)) +  
+  geom_path(alpha = 0.50) +
+ labs(title = "Beta Distribution for Priors",
+       x = "Marks",
+       y = "Density") 
+  
 
 
 
