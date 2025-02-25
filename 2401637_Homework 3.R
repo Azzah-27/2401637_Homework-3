@@ -40,9 +40,28 @@ summary(rhyming_model)
 #each person goes through one trial and one condition 
 
 
+
 #Interpret the output
-# Since there are only t values given, any value above -2 and + 2 are considered significant 
-# 
+# Since p-value is not provided here, typically, a t-value with an absolute value greater than 2 is considered statistically significant at the 0.05 level.
+# Correlation of Fixed Effects part of the model shows correlations between the estimates of the fixed effects.
+   #High correlations (close to 1 or -1) can indicate multicollinearity, which might make the estimates unstable.
+
+
+#Main effects:
+#The type of group (NR and ortho) has a significant impact on the reaction time. Specifically:
+   #The NR group has a significantly higher reaction time compared to the reference group (t = 2.385)
+   # The ortho group has a significantly lower reaction time compared to the reference group (t = -4.085)
+# These results indicate that the type of group is a predictor of reaction time, with the NR group associated with slower responses and the ortho group associated with faster responses compared to the baseline group.
+   
+
+
+#Interaction effects:
+ #The interaction between group type (NR and ortho) and the the level of inner speech (high_low_verbal) are not statistically significant.
+ #This suggests that the effect of group type on reaction time does not depend on the level of inner speech (high_low_verbal), and vice versa.
+
+#Correlation of Fixed effects:
+ #The correlations between the fixed effects are low to moderate
+ #This indicates that there is no severe multicollinearity between the variables in the model, and the estimates of the fixed effects are stable and reliable.
 
 
 
@@ -116,7 +135,7 @@ weakly_data <- tibble(x = marks, y = y_weakly, Prior = "Weakly-Informative")
 
 # Plot for Informative Prior
 ggplot(informative_data, aes(x = x, y = y)) +
-  geom_path(color = "blue", size = 1) +
+  geom_path(color = "blue", size = 0.5) +
   labs(title = "Informative Prior",
        x = "Marks",
        y = "Density") +
@@ -125,7 +144,7 @@ ggplot(informative_data, aes(x = x, y = y)) +
 
 # Plot for Weakly-Informative Prior 
 ggplot(weakly_data, aes(x = x, y = y)) +
-  geom_path(color = "red", size = 1) +  
+  geom_path(color = "red", size = 0.5) +  
   labs(title = "Weakly-Informative Prior",
        x = "Marks ",
        y = "Density") +
