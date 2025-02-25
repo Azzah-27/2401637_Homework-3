@@ -9,8 +9,6 @@ rhyming_data <- read.csv('data/rhyming.csv')
 #tidying the data
 rhyming_data_2 <- rhyming_data %>%
   unite(stimulus, image_1, image_2, sep = "_") %>% #this is to merge columns image_1 and image_2 into a new column named stimulus  
-mutate (participant_number = row_number()) %>%
- select(stimulus, rt, correct, type, VerbalScored, high_low_verbal, participant_number)
 
 
 # Calculate the mean reaction time for each combination of `type` and `high_low_verbal`
@@ -26,10 +24,6 @@ ggplot(summary_data, aes(x = type, y = mean_rt, fill = high_low_verbal)) +
        y = "Reaction Time (ms)") +
   theme_minimal() 
 
-#fitting a model 
-rhyming_model <- lmer(data = rhyming_data_2, rt ~ type * high_low_verbal + (1|participant_number))
-summary(rhyming_model)   #doesnt work
-
 
 #Chose a linear mixed-effects model (LMM) to analyze the data
 # Justification:
@@ -42,7 +36,8 @@ summary(rhyming_model)
 # - The model includes `type` and `high_low_verbal` as fixed effects, and their interaction.
 # - The random effect `(1 | worker_id)` accounts for variability between participants.
 # - This structure allows us to test whether the effect of stimulus type on reaction times depends on the level of inner speech.
-
+#each person has an individual slope but no intercept 
+#each person goes through one trial and one condition 
 
 # To check for significance of fixed effects
 anova(rhyming_model)
@@ -70,18 +65,18 @@ anova(rhyming_model)
 
 
 ####3.2 
+# Set seed for reproducibility
+set.seed(100)
 
-# Function to rescale marks to [0, 1]
-rescale_marks <- function(marks) {
-  marks / 100
-}
+# Simulate marks out of 100 (as an example)
+x <- seq(0, 100, by = 1)  # Marks range from 0 to 100
 
-# Define the range of values for marks (0 to 1)
-marks <- seq(0, 1, by = 0.01)
+# Normalize marks to fit into the [0, 1] interval
+marks <- x / 100
 
 # Define parameters for the Beta distribution
-alpha <- as.numeric(13)  
-beta <- as.numeric(7)   
+alpha <- 10
+beta <- 7
 
 # Calculate the probability density function (PDF) for the Beta distribution
 y <- dbeta(marks, alpha, beta)
@@ -91,85 +86,98 @@ beta_data <- tibble(x = marks, y = y)
 
 # Plot the Beta distribution
 ggplot(beta_data, aes(x = marks, y = y)) +
-  geom_line(color = "red", linewidth = 1.5) +
-  labs(title = "Example Beta Distribution for Marks")
+  geom_line(color = "red", linewidth = 1.0) +
+  labs(title = "Example Beta Distribution for Marks") +
+  theme_minimal()
 
 
 #####3.3
 
 # Defining parameters for informative prior: based on prior knowledge
-alpha_informative <- as.numeric(12)
-beta_informative <- as.numeric(7)  
-
-#create a rnorm for both 
+alpha_informative <- rnorm(n= 1, mean= 67, sd=5)
+beta_informative <- rnorm(n= 1, mean= 45, sd=5)
 
 # Defining parameters for weakly-informative prior: Broad and less specific
-alpha_weakly <- as.numeric(1.50)  
-beta_weakly <- as.numeric(1.50)  
+alpha_weakly <- rnorm(n= 1, mean= 50, sd=20)
+beta_weakly <-  rnorm(n= 1, mean= 45, sd=15)
 
 # Calculate densities for informative and weakly informative priors
 y_informative <- dbeta(marks, alpha_informative, beta_informative)
 y_weakly <- dbeta(marks, alpha_weakly, beta_weakly)
 
-
 # Creating tables for plotting
 informative_data <- tibble(x = marks, y = y_informative, Prior = "Informative")
 weakly_data <- tibble(x = marks, y = y_weakly, Prior = "Weakly-Informative")
 
-# Combining data 
-prior_data <- rbind(informative_data, weakly_data)
-
-# Plotting informative and weakly informative priors 
-ggplot(prior_data, aes(x = x, y = y, color = Prior)) +
-  geom_line (size= 0.5) +
-  labs(title = "Informative vs. Weakly-Informative Priors",
-       x = "Proportion",
+# Plot for Informative Prior
+ggplot(informative_data, aes(x = x, y = y)) +
+  geom_path(color = "blue", size = 1) +
+  labs(title = "Informative Prior",
+       x = "Marks",
        y = "Density") +
   theme_minimal()
+
+# Plot for Weakly-Informative Prior 
+ggplot(weakly_data, aes(x = x, y = y)) +
+  geom_path(color = "red", size = 1) +  
+  labs(title = "Weakly-Informative Prior",
+       x = "Marks ",
+       y = "Density") +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.1)) +
+  theme_minimal()
+
 
 
 #### 3.4 
 
-#using the code from the lecture 
-# μ ∼ N(67,5) σ ∼ Exp(0.5)
-set.seed(100)
-
-alpha_prior <- rnorm(1, 67, 5)  
-beta_prior <- rnorm(1, 0.5)  
-
-# Simulate student marks from a Beta distribution
-sim_students <- tibble(marks = rbeta(100, alpha_prior, beta_prior))
-
-#create table of alpha and beta values for priors 
-priors <- tibble(n = 1:50) %>% 
-  group_by(n) %>% 
-  mutate(alpha_prior = rgamma(1, 1, 5), # Gamma ensures alpha > 0
-         beta_prior = rgamma(1, 1, 5) # Gamma ensures beta > 0
-         )
-
 # Function to compute the density for a given alpha and beta
 gen_prior_pred <- function(n, alpha_prior, beta_prior) { 
-  
-  x <- seq(0, 100, 0.1) 
+  x <- seq(0, 1, 0.01)  # Normalized marks in [0, 1]
   d <- tibble(n = n, alpha = alpha_prior, beta = beta_prior, 
               x = x, 
               y = dbeta(x, alpha_prior, beta_prior)) 
-  
   return(d) 
-} 
-
-# apply function to each prior sample 
-prior_llh <- pmap_df(priors, gen_prior_pred)
-
-#plotting prior predictions 
-ggplot(prior_llh, aes(x, y, group = interaction(alpha, beta))) +  
-  geom_path(alpha = 0.50) +
- labs(title = "Beta Distribution for Priors",
-       x = "Marks",
-       y = "Density") 
-  
+}
 
 
+# Create informative priors (narrow and specific)
+priors_informative <- tibble(n = 1:50) %>% 
+  group_by(n) %>% 
+  mutate(alpha_prior = rnorm(1, 67, 5),  # Informative alpha (centered around 67)
+         beta_prior = rnorm(1, 45, 5)    # Informative beta (centered around 45)
+  )
+
+# Create weakly informative priors (broad and less specific)
+priors_weakly <- tibble(n = 1:50) %>% 
+  group_by(n) %>% 
+  mutate(alpha_prior = rnorm(1, 50, 20),  # Weakly informative alpha (broad distribution)
+         beta_prior = rnorm(1, 40, 20)    # Weakly informative beta (broad distribution)
+  )
+
+
+# Apply function to each prior sample for informative priors
+prior_llh_informative <- pmap_df(priors_informative, gen_prior_pred)
+
+# Apply function to each prior sample for weakly informative priors
+prior_llh_weakly <- pmap_df(priors_weakly, gen_prior_pred)
+
+# Plot for Informative Priors
+ggplot(prior_llh_informative, aes(x, y, group = interaction(alpha, beta))) +  
+  geom_path(alpha = 0.50, color = "blue") +  # Use blue for informative priors
+  labs(title = "Informative Priors (Narrow and Specific)",
+       x = "Normalized Marks (out of 100)",
+       y = "Density") +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.1)) +
+  theme_minimal()
+
+# Plot for Weakly Informative Priors
+ggplot(prior_llh_weakly, aes(x, y, group = interaction(alpha, beta))) +  
+  geom_path(alpha = 0.50, color = "red") +  # Use blue for informative priors
+  labs(title = "Informative Priors (Narrow and Specific)",
+       x = "Normalized Marks (out of 100)",
+       y = "Density") +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.1)) +
+  theme_minimal()
 
 
 
