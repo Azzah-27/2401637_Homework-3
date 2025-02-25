@@ -8,7 +8,7 @@ rhyming_data <- read.csv('data/rhyming.csv')
 
 #tidying the data
 rhyming_data_2 <- rhyming_data %>%
-  unite(stimulus, image_1, image_2, sep = "_") %>% #this is to merge columns image_1 and image_2 into a new column named stimulus  
+  unite(stimulus, image_1, image_2, sep = "_") #this is to merge columns image_1 and image_2 into a new column named stimulus  
 
 
 # Calculate the mean reaction time for each combination of `type` and `high_low_verbal`
@@ -71,7 +71,7 @@ set.seed(100)
 # Simulate marks out of 100 (as an example)
 x <- seq(0, 100, by = 1)  # Marks range from 0 to 100
 
-# Normalize marks to fit into the [0, 1] interval
+# Rescaling marks to fit into the [0, 1] interval
 marks <- x / 100
 
 # Define parameters for the Beta distribution
@@ -143,15 +143,15 @@ gen_prior_pred <- function(n, alpha_prior, beta_prior) {
 # Create informative priors (narrow and specific)
 priors_informative <- tibble(n = 1:50) %>% 
   group_by(n) %>% 
-  mutate(alpha_prior = rnorm(1, 67, 5),  # Informative alpha (centered around 67)
-         beta_prior = rnorm(1, 37 ,5)    # Informative beta (centered around 45)
+  mutate(alpha_prior = alpha_informative,  # Informative alpha (centered around 67)
+         beta_prior = beta_informative    # Informative beta (centered around 45)
   )
 
 # Create weakly informative priors (broad and less specific)
 priors_weakly <- tibble(n = 1:50) %>% 
   group_by(n) %>% 
-  mutate(alpha_prior = rnorm(1, 50, 20),  # Weakly informative alpha (broad distribution)
-         beta_prior = rnorm(1, 45, 20)    # Weakly informative beta (broad distribution)
+  mutate(alpha_prior = alpha_weakly,  # Weakly informative alpha (broad distribution)
+         beta_prior = beta_weakly   # Weakly informative beta (broad distribution)
   )
 
 
@@ -163,18 +163,18 @@ prior_llh_weakly <- pmap_df(priors_weakly, gen_prior_pred)
 
 # Plot for Informative Priors
 ggplot(prior_llh_informative, aes(x, y, group = interaction(alpha, beta))) +  
-  geom_path(alpha = 0.50, color = "blue") +  # Use blue for informative priors
-  labs(title = "Informative Priors (Narrow and Specific)",
-       x = "Normalized Marks (out of 100)",
+  geom_path(alpha = 0.50, color = "blue") +  
+  labs(title = "Informative Priors",
+       x = "Marks",
        y = "Density") +
   scale_x_continuous(breaks = seq(0, 1, by = 0.1)) +
   theme_minimal()
 
 # Plot for Weakly Informative Priors
 ggplot(prior_llh_weakly, aes(x, y, group = interaction(alpha, beta))) +  
-  geom_path(alpha = 0.50, color = "red") +  # Use blue for informative priors
-  labs(title = "Informative Priors (Narrow and Specific)",
-       x = "Normalized Marks (out of 100)",
+  geom_path(alpha = 0.50, color = "red") +  
+  labs(title = "Informative Priors",
+       x = "Marks",
        y = "Density") +
   scale_x_continuous(breaks = seq(0, 1, by = 0.1)) +
   theme_minimal()
