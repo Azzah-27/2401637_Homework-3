@@ -40,7 +40,7 @@ summary(rhyming_model)
 #each person goes through one trial and one condition 
 
 # To check for significance of fixed effects
-anova(rhyming_model)
+anova(rhyming_model) #check if this is needed
 
 #Interpret the output
 
@@ -51,13 +51,11 @@ anova(rhyming_model)
 
 
 #####3.1
-#beta distribution consists of 2 parameters: alpha and beta 
-#The beta distribution is a continuous probability distribution defined on the interval [0, 1]
-#To make our dependent variable fit within this interval
-#Our DV here is the percentages of marks. we need to convert these percentages to decimals to fit within this range
-#The Beta distribution takes two shape parameters: alpha (α) and beta (β).
+#The Beta distribution takes two shape parameters: alpha (α) and beta (β)
+# It is a continuous probability distribution defined on the interval [0, 1]
+# In our case, the dependent variable (DV) represents percentages of marks. 
 # Since the Beta distribution is defined on the interval [0, 1], we need to rescale the marks (0 to 100) to [0, 1].
-#we divide the percentages by 100 (considering marks are out of 100)
+# To do this, we divide the percentages by 100 (considering marks are out of 100)
    #For example: 
      # - A mark of 67% would become 0.67
      # - A mark of 85% would become 0.85
@@ -72,34 +70,41 @@ set.seed(100)
 x <- seq(0, 100, by = 1)  # Marks range from 0 to 100
 
 # Rescaling marks to fit into the [0, 1] interval
-marks <- x / 100
+marks <- x / 100 
+# The marks are rescaled to the interval [0, 1] by dividing each value by 100.
+# This is necessary because the Beta distribution is defined only for values between 0 and 1.
 
 # Define parameters for the Beta distribution
 alpha <- 10
 beta <- 7
+#Here, `alpha = 10` and `beta = 7` are chosen as example values.
 
 # Calculate the probability density function (PDF) for the Beta distribution
-y <- dbeta(marks, alpha, beta)
+y <- dbeta(marks, alpha, beta)  # The result, 'y', represents the probability density at each value of 'marks'
 
 # Create a data frame for plotting
 beta_data <- tibble(x = marks, y = y)
 
 # Plot the Beta distribution
 ggplot(beta_data, aes(x = marks, y = y)) +
-  geom_line(color = "red", linewidth = 1.0) +
+  geom_line(color = "red", linewidth = 0.75) +
   labs(title = "Example Beta Distribution for Marks") +
   theme_minimal()
 
 
 #####3.3
 
-# Defining parameters for informative prior: based on prior knowledge
-alpha_informative <- rnorm(n= 1, mean= 67, sd=5)
+# Defining parameters for informative prior
+alpha_informative <- rnorm(n= 1, mean= 67, sd=5) 
 beta_informative <- rnorm(n= 1, mean= 45, sd=5)
+# Justification: Informative priors are based on prior knowledge, so we use the defined values
+# for alpha_informative and beta_informative to ensure consistency.
 
-# Defining parameters for weakly-informative prior: Broad and less specific
-alpha_weakly <- rnorm(n= 1, mean= 50, sd=20)
+# Defining parameters for weakly-informative prior
+alpha_weakly <- rnorm(n= 1, mean= 50, sd=20) #taking a mean mark of 50 here with a broad sd range
 beta_weakly <-  rnorm(n= 1, mean= 45, sd=15)
+# Justification: Weakly informative priors are broad and less specific, so we use means (50, 45)
+# and larger standard deviations (20, 15) to ensure the priors cover a wide range of possible values.
 
 # Calculate densities for informative and weakly informative priors
 y_informative <- dbeta(marks, alpha_informative, beta_informative)
@@ -132,26 +137,28 @@ ggplot(weakly_data, aes(x = x, y = y)) +
 
 # Function to compute the density for a given alpha and beta
 gen_prior_pred <- function(n, alpha_prior, beta_prior) { 
-  x <- seq(0, 1, 0.01)  # Normalized marks in [0, 1]
+  x <- seq(0, 1, 0.01)   # Generate a sequence of x values (rescaled marks in [0, 1])
+  
+  # Create a table with the density values for the Beta distribution
   d <- tibble(n = n, alpha = alpha_prior, beta = beta_prior, 
               x = x, 
-              y = dbeta(x, alpha_prior, beta_prior)) 
-  return(d) 
+              y = dbeta(x, alpha_prior, beta_prior)) #compute beta density
+  return(d) #Return the data 
 }
 
 
 # Create informative priors (narrow and specific)
-priors_informative <- tibble(n = 1:50) %>% 
+priors_informative <- tibble(n = 1:50) %>% #Creating 50 prior samples, assuming that there are 50 students in the class
   group_by(n) %>% 
-  mutate(alpha_prior = alpha_informative,  # Informative alpha (centered around 67)
-         beta_prior = beta_informative    # Informative beta (centered around 45)
+  mutate(alpha_prior = alpha_informative,  #Using the defined alpha_informative value (centered around 67)
+         beta_prior = beta_informative    #Using the defined beta_informative value 
   )
 
 # Create weakly informative priors (broad and less specific)
 priors_weakly <- tibble(n = 1:50) %>% 
   group_by(n) %>% 
-  mutate(alpha_prior = alpha_weakly,  # Weakly informative alpha (broad distribution)
-         beta_prior = beta_weakly   # Weakly informative beta (broad distribution)
+  mutate(alpha_prior = alpha_weakly,  #Using the defined alpha_weakly value (centered around 50)
+         beta_prior = beta_weakly   #Using the defined beta_weakly 
   )
 
 
