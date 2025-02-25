@@ -144,14 +144,14 @@ gen_prior_pred <- function(n, alpha_prior, beta_prior) {
 priors_informative <- tibble(n = 1:50) %>% 
   group_by(n) %>% 
   mutate(alpha_prior = rnorm(1, 67, 5),  # Informative alpha (centered around 67)
-         beta_prior = rnorm(1, 30 ,3)    # Informative beta (centered around 45)
+         beta_prior = rnorm(1, 37 ,5)    # Informative beta (centered around 45)
   )
 
 # Create weakly informative priors (broad and less specific)
 priors_weakly <- tibble(n = 1:50) %>% 
   group_by(n) %>% 
   mutate(alpha_prior = rnorm(1, 50, 20),  # Weakly informative alpha (broad distribution)
-         beta_prior = rnorm(1, 40, 20)    # Weakly informative beta (broad distribution)
+         beta_prior = rnorm(1, 45, 20)    # Weakly informative beta (broad distribution)
   )
 
 
