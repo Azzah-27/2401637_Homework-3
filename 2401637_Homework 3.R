@@ -65,7 +65,9 @@ summary(rhyming_model)
 
 
 
-########################## QUESTION 2 ###############################
+
+
+########################## QUESTION 3 ###############################
 
 
 #####3.1
@@ -115,15 +117,14 @@ ggplot(beta_data, aes(x = marks, y = y)) +
 
 # Defining parameters for informative prior
 alpha_informative <- rnorm(n= 1, mean= 67, sd=5) 
-beta_informative <- rnorm(n= 1, mean= 45, sd=5)
-# Justification: Informative priors are based on prior knowledge, so we use the defined values
-# for alpha_informative and beta_informative to ensure consistency.
+beta_informative <- rnorm(n= 1, mean= 35, sd=5)
+# Justification: Informative priors are based on prior knowledge, so we use the defined values for alpha_informative 
 
 # Defining parameters for weakly-informative prior
 alpha_weakly <- rnorm(n= 1, mean= 50, sd=20) #taking a mean mark of 50 here with a broad sd range
-beta_weakly <-  rnorm(n= 1, mean= 45, sd=15)
-# Justification: Weakly informative priors are broad and less specific, so we use means (50, 45)
-# and larger standard deviations (20, 15) to ensure the priors cover a wide range of possible values.
+beta_weakly <-  rnorm(n= 1, mean= 40, sd=20)
+# Justification: Weakly informative priors are broad and less specific, so we use mean of 50 and 40
+# and larger standard deviations (20) to ensure that the priors cover a wide range of possible values.
 
 # Calculate densities for informative and weakly informative priors
 y_informative <- dbeta(marks, alpha_informative, beta_informative)
@@ -171,16 +172,15 @@ gen_prior_pred <- function(n, alpha_prior, beta_prior) {
 priors_informative <- tibble(n = 1:50) %>% #Creating 50 prior samples, assuming that there are 50 students in the class
   group_by(n) %>% 
   mutate( alpha_prior = rnorm(n= 1, mean= 67, sd = 5) , #Using the defined alpha_informative value (centered around 67)
-          beta_prior = rnorm(n= 1, mean= 45, sd = 5)  #Using the defined beta_informative value 
+          beta_prior = rnorm(n= 1, mean= 35, sd = 5)  #Using the defined beta_informative value 
     )   
    
   
-
 # Create weakly informative priors (broad and less specific)
 priors_weakly <- tibble(n = 1:50) %>% 
   group_by(n) %>% 
   mutate(alpha_prior = rnorm(n= 1, mean= 50, sd=20) ,  #Using the defined alpha_weakly value (centered around 50)
-         beta_prior = rnorm(n= 1, mean = 45, sd=15)  #Using the defined beta_weakly 
+         beta_prior = rnorm(n= 1, mean = 40, sd=20)  #Using the defined beta_weakly 
   )
 
 
